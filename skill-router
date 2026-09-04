@@ -1,0 +1,373 @@
+---
+name: skill-router
+description: "Use when the user asks which skill to use, wants a comparison between skills, says 'I don't know where to start', asks for the best approach to a task, or says 'compare skills for X'. Routes to the optimal skill(s) using structured comparison, project context, and workflow chaining."
+risk: safe
+source: self
+version: "3.0.0"
+---
+
+# Skill Router v3
+
+## When to Use
+Use this skill when:
+- The user says "which skill should I use" or "I don't know where to start"
+- The user asks for a **comparison** between multiple approaches or skills
+- The user has a vague goal without a clear method
+- The user says "you pick the best one" / "choose for me" / "اختار انت" / "نفذ فوراً"
+- The user asks "what's the difference between X and Y skills"
+- The user wants to know the best workflow for a specific task
+
+## Goal
+
+Help users find the right skill(s) from their installed library by:
+1. Understanding their goal through **deep context extraction** (not excessive questioning)
+2. Presenting a **structured comparison table** with rejection reasoning
+3. Supporting three modes: **Comparison**, **Auto-Pilot**, and **Hybrid**
+4. Executing the chosen skill immediately — not just recommending it
+5. Chaining multiple skills into a sequential workflow when needed
+
+---
+
+## Operating Modes
+
+### Mode 1: Comparison Mode (Default)
+The user wants to see options and choose. Present a full comparison table.
+Trigger phrases: "compare", "show me options", "which is better", "قارن لي", "ما الخيارات"
+
+### Mode 2: Auto-Pilot Mode
+The user trusts the agent to pick and execute immediately.
+Trigger phrases: "you choose", "pick the best", "just go", "اختار انت", "نفذ فوراً", "روح فيها"
+
+### Mode 3: Hybrid Mode
+Activated automatically when context is insufficient (empty project, no open files,
+completely ambiguous request). Ask **exactly one** open-ended question:
+> "ما الذي تريد إنجازه بالتحديد؟"
+Then route automatically based on the answer — do NOT continue interviewing.
+
+### Mode Detection Rules
+1. If the user explicitly picks a mode → use it.
+2. If the user previously said "always pick for me" in this session → Auto-Pilot for all subsequent routing.
+3. If context is rich (project files exist, request is clear) → Comparison Mode.
+4. If context is empty/ambiguous → Hybrid Mode (one question, then auto-route).
+
+### Mode Switching
+The user can switch modes at any time by saying:
+- "توقف" / "stop" / "بدّل للوضع اليدوي" → Switch from Auto-Pilot to Comparison
+- "كمّل لحالك" / "اختار انت" → Switch from Comparison to Auto-Pilot
+
+---
+
+## Instructions
+
+### Step 1 — Deep Context Extraction (Silent)
+
+Before asking ANY question, gather all available context automatically:
+
+**Layer 1 — Project Identity (Always Read)**
+- `AGENTS.md` or `.agents/AGENTS.md` — project rules and architecture
+- `package.json` or `requirements.txt` or `Cargo.toml` — tech stack and dependencies
+- `README.md` — project description and purpose
+
+**Layer 2 — Technical Context (Read If Available)**
+- `tsconfig.json` / `next.config.ts` / `vite.config.ts` — framework configuration
+- `docker-compose.yml` / `Dockerfile` — deployment setup
+- `.env.example` — environment variable structure
+- `prisma/schema.prisma` or database config — data layer
+
+**Layer 3 — Recent Activity (Quick Scan)**
+- Recent `git log` (last 5 commits) — what the team is working on
+- Directory structure (top 2 levels) — project organization
+- User's open files in the editor — current focus area
+- Active file content (first/last 30 lines) — specific context
+
+**Language Detection**
+Detect the language of the user's message. All responses, tables, recommendations,
+and explanations MUST be in the same language the user used. If the user writes in
+Arabic, respond entirely in Arabic. If English, respond in English.
+
+**Rule: Ask at most 1 question.** If Layers 1-3 provide enough signal, ask ZERO
+questions. Only fall back to Hybrid Mode when the project is genuinely empty.
+
+---
+
+### Step 2 — Search and Rank Skills
+
+Scan the full installed skills list and identify **top 2-4 candidates**.
+
+For each candidate, evaluate on these criteria:
+
+| Criterion | Weight | Description |
+|-----------|--------|-------------|
+| **Relevance** | 40% | How closely does this skill match the stated goal? |
+| **Project Fit** | 25% | Does it match the detected tech stack? |
+| **Specificity** | 20% | Is it laser-focused or too generic? Prefer specific. |
+| **Completeness** | 15% | Will it handle the full task or only part? |
+
+**Verification Rule:** Before including any skill in the comparison, verify it exists
+in the "Available skills" list from the system prompt. Mark verified skills with ✅
+and unverified ones with ⚠️.
+
+---
+
+### Step 3 — Present Results
+
+#### In Comparison Mode: Full Comparison Table
+
+```markdown
+## 🔍 Skill Comparison for: [User's Goal]
+
+| المعيار | Skill A ✅ | Skill B ✅ | Skill C ✅ |
+|---------|-----------|-----------|-----------|
+| **الاسم** | `skill-a` | `skill-b` | `skill-c` |
+| **التركيز** | [1-line] | [1-line] | [1-line] |
+| **ملاءمة المشروع** | ⭐⭐⭐ | ⭐⭐ | ⭐ |
+| **التخصص** | عالي | متوسط | منخفض |
+| **تغطية المهمة** | ✅ كاملة | ⚠️ جزئية | ✅ كاملة |
+| **الوقت التقريبي** | ~5 دقائق | ~15 دقيقة | ~30 دقيقة |
+| **الأفضل عندما** | [scenario] | [scenario] | [scenario] |
+
+### ✅ توصيتي: `skill-a`
+**السبب:** [2-3 sentences with project-specific reasoning]
+
+### ❌ لماذا لم أختر الأخرى؟
+- **`skill-b`:** [1 sentence — e.g., "تغطي جزءاً فقط من المهمة"]
+- **`skill-c`:** [1 sentence — e.g., "عامة جداً ولا تتناسب مع Next.js"]
+
+### 🔗 خطة التنفيذ المقترحة:
+`skill-a` → `skill-d` (عند الانتهاء من المرحلة الأولى) → `skill-e` (للتحقق النهائي)
+```
+
+After the table, ask:
+> "أي واحدة تختار؟ أو أنفذ توصيتي مباشرة؟"
+
+#### In Auto-Pilot Mode: Pick, Announce, Execute
+
+```markdown
+## ⚡ Auto-Selected: `skill-name` ✅
+**السبب:** [1-2 sentences]
+**جاري قراءة تعليمات المهارة والبدء بالتنفيذ...**
+```
+
+Then immediately read the skill's SKILL.md and begin execution.
+
+**Auto-Pilot Safety Gate:** If the selected skill will perform any of these actions,
+pause and ask for confirmation BEFORE executing — even in Auto-Pilot mode:
+- Deleting files or directories
+- Modifying database schemas or data
+- Running destructive commands (`rm`, `drop`, `reset`, `format`)
+- Changing authentication or security configurations
+- Making external API calls that cost money
+- Pushing to remote repositories
+
+Format the safety confirmation as:
+```markdown
+> ⚠️ **تأكيد مطلوب:** المهارة المختارة ستقوم بـ [action]. هل تريد المتابعة؟
+```
+
+#### In Hybrid Mode: One Question Then Auto-Route
+
+```markdown
+## 🤔 أحتاج توضيحاً سريعاً
+لم أجد سياقاً كافياً من ملفات المشروع. سؤال واحد فقط:
+> **ما الذي تريد إنجازه بالتحديد؟**
+```
+
+After the user answers, switch to Comparison or Auto-Pilot based on the user's
+established preference.
+
+---
+
+### Step 4 — Execute or Chain
+
+After the user selects (or in Auto-Pilot):
+
+**Single Skill Execution:**
+1. Read the full `SKILL.md` of the chosen skill using `view_file`.
+2. Follow its instructions as if the user had invoked it directly.
+3. Do NOT just recommend — actually begin the skill's workflow.
+
+**Multi-Skill Pipeline (When the goal requires multiple skills):**
+1. Present the pipeline visually:
+   ```
+   brainstorming → writing-plans → senior-fullstack → testing-patterns
+   ```
+2. Explain why each step is needed in one line.
+3. Execute the first skill in the chain.
+4. When it completes, automatically transition to the next skill, passing relevant
+   context (files created, decisions made, artifacts produced).
+5. At each transition, briefly announce: "المرحلة الأولى اكتملت. الانتقال إلى [next skill]..."
+
+**Auto-Fallback (Auto-Pilot Only):**
+If the primary skill fails or produces unexpected results:
+1. Announce the failure briefly: "المهارة الأساسية واجهت مشكلة: [brief description]"
+2. Automatically switch to the next-ranked candidate from Step 2.
+3. Announce the switch: "الانتقال إلى البديل: `skill-b`"
+4. If all candidates fail, offer manual assistance.
+
+**No Skill Found — Smart Fallback:**
+If no installed skill matches the user's goal well:
+```markdown
+> ⚠️ لا توجد مهارة مثبتة تطابق طلبك بدقة.
+> **خياراتك:**
+> 1. أساعدك يدوياً بدون مهارة محددة
+> 2. أنشئ مهارة مخصصة جديدة لهذا النوع من المهام (باستخدام `writing-skills`)
+> 3. أستخدم مهارة عامة مثل `brainstorming` كنقطة بداية
+```
+
+---
+
+### Step 5 — Session Memory
+
+Track the following decisions within the current conversation:
+
+- **Mode preference:** If the user chose Auto-Pilot once, default to it for subsequent routing.
+- **Rejected skills:** Do not re-recommend a skill the user explicitly rejected in this session.
+- **Stack context:** Once the tech stack is detected, do not re-detect or re-ask in subsequent routing calls.
+- **Language:** Once detected, maintain the same response language throughout.
+
+This memory is session-scoped only — it resets when a new conversation starts.
+
+---
+
+## Context-Aware Routing Reference
+
+### Building / Coding
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| Full app from scratch | `app-builder` | + `brainstorming` if no spec | ~2h |
+| Frontend feature/UI | `frontend-design` | + `react-patterns` or `nextjs-best-practices` | ~30m |
+| Backend API | `backend-dev-guidelines` | + `api-patterns` + stack skill | ~45m |
+| Database work | `database-design` | + `prisma-expert` or `neon-postgres` | ~30m |
+| Full-stack feature | `senior-fullstack` | + framework skill | ~1h |
+| Mobile app | `flutter-expert` | + platform HIG skills | ~2h |
+
+### Debugging / Fixing
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| General debugging | `systematic-debugging` | + `debugger` for complex | ~15m |
+| Test failures | `test-fixing` | + `testing-patterns` | ~20m |
+| Performance issues | `performance-profiling` | + `react-component-performance` | ~30m |
+| Code quality | `clean-code` | + `simplify-code` | ~20m |
+
+### Testing
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| TDD workflow | `tdd-workflow` | + red → green → refactor skills | ~30m |
+| E2E browser tests | `playwright-skill` | + `webapp-testing` | ~45m |
+| General patterns | `testing-patterns` | — | ~20m |
+
+### Security
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| Full pentest | `ethical-hacking-methodology` | + `pentest-checklist` | ~2h |
+| Web app security | `security-auditor` | + `top-web-vulnerabilities` | ~1h |
+| Code audit | `vibe-code-auditor` | + `differential-review` | ~30m |
+
+### AI / LLM / Agents
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| Agent architecture | `ai-agents-architect` | + `multi-agent-patterns` | ~1h |
+| RAG pipeline | `rag-engineer` | + `embedding-strategies` | ~1h |
+| Prompt optimization | `prompt-engineer` | — | ~15m |
+| Multi-agent | `langgraph` or `crewai` | + `langfuse` | ~2h |
+
+### DevOps / Deployment
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| CI/CD pipeline | `github-workflow-automation` | + `gitlab-ci-patterns` | ~30m |
+| Cloud deploy | `vercel-deployment` or `aws-serverless` | — | ~30m |
+| Infrastructure | `terraform-skill` | + cloud module skills | ~1h |
+| Git workflow | `github` | + `git-pr-review` | ~15m |
+
+### Marketing / SEO / Content
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| SEO audit | `seo-audit` | + `seo-fundamentals` | ~30m |
+| Content writing | `content-creator` | + `copywriting` | ~30m |
+| Landing page CRO | `page-cro` | — | ~20m |
+| Launch strategy | `launch-strategy` | + `growth-engine` | ~1h |
+
+### Planning / Architecture
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| Quick task plan | `concise-planning` | — | ~5m |
+| Full plan | `writing-plans` | → `executing-plans` | ~30m |
+| Architecture review | `senior-architect` | + `architect-review` | ~45m |
+| Code review | `code-reviewer` | + `receiving-code-review` | ~20m |
+
+### Design / Creative
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| UI/UX design | `frontend-design` | + `design-spells` | ~30m |
+| Design system | `shadcn` | + `ui-tokens` | ~45m |
+| Animations | `animejs-animation` | + `magic-animator` | ~20m |
+| Data visualization | `claude-d3js-skill` | — | ~30m |
+
+### Documents
+
+| Goal | Primary Skill | Est. Time |
+|------|--------------|-----------|
+| Word document | `docx-official` | ~15m |
+| Spreadsheet | `xlsx-official` | ~15m |
+| Presentation | `frontend-slides` or `pptx-official` | ~30m |
+| PDF | `pdf-official` | ~15m |
+
+### Autonomous Execution
+
+| Goal | Primary Skill | Chain With | Est. Time |
+|------|--------------|------------|-----------|
+| Parallel tasks | `subagent-driven-development` | — | varies |
+| Plan then execute | `writing-plans` → `executing-plans` | — | ~1h |
+| Deep research | `deep-research` | — | ~30m |
+
+---
+
+## Constraints
+
+- In Comparison Mode: show **2-4 candidates max** in the table.
+- In Auto-Pilot Mode: pick exactly **1 skill** and execute immediately.
+- In Hybrid Mode: ask exactly **1 open-ended question**, then route.
+- Always verify skill existence before recommending (✅ installed / ⚠️ unverified).
+- Prefer **specific skills** over generic ones when the stack is known.
+- Auto-detect the stack from project files — do NOT ask if detectable.
+- Always include "Why not the others" section in Comparison Mode.
+- After selection, **read SKILL.md and begin work** — never stop at recommendation.
+- If no skill fits, offer the 3-option smart fallback (manual / create new / use generic).
+- Respond in the **same language** the user used.
+- In Auto-Pilot, **always pause for dangerous operations** (Safety Gate).
+- Track session decisions to avoid repetition (Session Memory).
+
+---
+
+## Failure Shields
+
+- Do NOT recommend skills that are not verified as installed.
+- Do NOT ask more than 1 question when project context is available.
+- Do NOT present a comparison table with only 1 option — just recommend directly.
+- Do NOT ignore project files (AGENTS.md, package.json, open files) in favor of questions.
+- Do NOT recommend the same skill under multiple names in the table.
+- Do NOT execute destructive operations in Auto-Pilot without confirmation.
+- Do NOT re-recommend a skill the user already rejected in this session.
+- Do NOT switch languages mid-response — maintain consistency.
+- Do NOT skip the "Why not others" section in Comparison Mode.
+- Do NOT present a pipeline of more than 4 skills — simplify if longer.
+
+---
+
+## Limitations
+
+- Only recommends skills from the installed library.
+- Routing is heuristic. Truly ambiguous goals may need 1 follow-up question.
+- The routing reference covers common patterns but not every installed skill.
+- In Auto-Pilot, the agent's choice may not always match the user's preference — override is always available.
+- Session memory is conversation-scoped only; it does not persist across conversations.
+- Estimated times are rough approximations and depend on task complexity.
