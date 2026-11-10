@@ -1,6 +1,6 @@
 ---
 name: skill-router
-description: "Use when the user asks which skill to use, wants a comparison between skills, says 'I don't know where to start', asks for the best approach to a task, or says 'compare skills for X'. Routes to the optimal task skill(s) while permanently enforcing the Layer-0 Constitutional Kernel (agy-output-style, agy-context-optimizer, agy-code-guard, agy-error-protocol, and sovereign-auth-architect)."
+description: "Use when the user asks which skill to use, wants a comparison between skills, says 'I don't know where to start', asks for the best approach to a task, or says 'compare skills for X'. Routes to the optimal task skill(s) while permanently enforcing the Layer-0 Constitutional Kernel (agy-output-style, agy-context-optimizer, agy-code-guard, agy-error-protocol, and qw-account-system)."
 risk: safe
 source: self
 version: "4.0.0"
@@ -23,7 +23,7 @@ version: "4.0.0"
 | **`agy-context-optimizer`** | Context & Token Efficiency Engine | **Pre-Read Gate:** Cap initial context scan to `<= 8` files, grep-first before reading files `> 300 lines`, use `StartLine`/`EndLine` slicing, never read `node_modules/`, `dist/`, `vendor/`, or lockfiles. |
 | **`agy-code-guard`** | Code Quality & Anti-LLM Failure Gate | **Post-Write / Pre-Delivery Gate:** Mandatory guard-pass on every code change. Enforces zero silent `catch {}`, zero hallucinated imports, zero code duplication `> 5 lines`, `<= 30-line` functions, `SOLID/DRY/KISS`, and All-or-Nothing localization across all project languages. |
 | **`agy-error-protocol`** | Surgical Debugging & 3-Strike Engine | **On-Error Preemption Gate:** Triggered immediately on any test/build/command failure. Enforces the 5-step surgical fix (`Read → Simulate → Inspect ±10 lines → Isolate → Surgical Fix`) and stops after **3 failed attempts** to name the doubtful assumption. |
-| **`sovereign-auth-architect`** | Sovereign Account & Auth Override | **Domain Override Gate:** Whenever a request involves Login, Registration, Accounts, Rate-Limiting, Forbidden Words, OTP, 2FA, Passkeys, Sessions, JWT, CSRF, or RBAC, route **100% unconditionally** to [`../sovereign-auth-architect/SKILL.md`](../sovereign-auth-architect/SKILL.md). |
+| **`qw-account-system`** | QW Account & Auth Override | **Domain Override Gate:** Whenever a request involves Login, Registration, Accounts, Rate-Limiting, Forbidden Words, OTP, 2FA, Passkeys, Sessions, JWT, CSRF, or RBAC, route **100% unconditionally** to [`../qw-account-system/SKILL.md`](../qw-account-system/SKILL.md). |
 
 ---
 
@@ -37,7 +37,7 @@ version: "4.0.0"
 ## Operating Modes
 
 ### Mode 1: Fast-Track Mode (Auto-Triggered when Top Candidate Confidence `>= 90%`)
-If a single installed skill (or Sovereign Override) matches the user's goal with **`>= 90%` confidence** and leads the second candidate by **`>= 25` points** (and the user did NOT explicitly ask to `"compare"` / `"قارن"`):
+If a single installed skill (or QW Override) matches the user's goal with **`>= 90%` confidence** and leads the second candidate by **`>= 25` points** (and the user did NOT explicitly ask to `"compare"` / `"قارن"`):
 - Do **NOT** waste the user's time with a 4-column comparison table and a manual confirmation pause.
 - Output a crisp 3-line selection banner, read the chosen `SKILL.md`, and **execute immediately** under the Layer-0 Constitutional Kernel.
 
@@ -67,7 +67,7 @@ Before asking any question, inspect up to `<= 8` high-signal files:
 3. **Layer 3 (Active Focus):** Open editor files (first/last 30 lines via `StartLine`/`EndLine`) and top-level directory structure.
 
 ### Step 2 — Search, Recover Excluded Skills & Score Candidates
-1. **Check Layer-0 Domain Overrides First:** If the task touches Auth/Accounts/Security, select `sovereign-auth-architect` immediately (`100%` score).
+1. **Check Layer-0 Domain Overrides First:** If the task touches Auth/Accounts/Security, select `qw-account-system` immediately (`100%` score).
 2. **Scan Both `Available skills` AND `Excluded due to context budget limits`:**
    - **Excluded Skills Recovery Rule:** Many installed skills appear in the system prompt under `The following items were excluded due to context budget limits` without descriptions. If a skill name in the excluded list looks relevant to the user's goal, read lines `1–15` (YAML frontmatter) of `~/.gemini/config/skills/<skill-name>/SKILL.md` using `read_file` to verify its exact description before scoring!
 3. **Score Top 2–4 Task Candidates:**
@@ -118,7 +118,7 @@ End with: **"أي مهارة نعتمد، أو أبدأ بتنفيذ توصيت�
 ### Step 4 — Execute, Chain & Delegate to Subagents
 1. **Read & Execute:** Read the chosen skill's `SKILL.md` via `read_file` and execute its workflow.
 2. **Multi-Skill Pipeline (Max 4 Task Skills):**
-   - If the goal requires a sequence (e.g., `concise-planning → sovereign-auth-architect → e2e-testing`), pass created file paths and decisions between stages and announce transitions (`"المرحلة 1 من 3 مكتملة ✅ — الانتقال إلى..."`).
+   - If the goal requires a sequence (e.g., `concise-planning → qw-account-system → e2e-testing`), pass created file paths and decisions between stages and announce transitions (`"المرحلة 1 من 3 مكتملة ✅ — الانتقال إلى..."`).
    - **Subagent Delegation:** If a pipeline requires broad codebase exploration before implementation, delegate the read-only survey to the `research` subagent (`invoke_subagent`) to keep the main context window clean.
 3. **Mandatory Post-Execution Gate (`agy-code-guard`):**
    - Before presenting any written/modified code, run the `agy-code-guard` checklist (no empty catches, verified imports, functions `<= 30 lines`, all project locales updated).
@@ -131,10 +131,10 @@ End with: **"أي مهارة نعتمد، أو أبدأ بتنفيذ توصيت�
 
 > *Note: Every route below automatically runs under the Layer-0 Constitutional Kernel (`agy-output-style`, `agy-context-optimizer`, `agy-code-guard`, `agy-error-protocol`).*
 
-### 🔐 Authentication, Accounts & Security (Sovereign Priority)
+### 🔐 Authentication, Accounts & Security (QW Priority)
 | Goal | Primary Skill | Chain With | Est. Time |
 |------|--------------|------------|-----------|
-| Login / Register / Account System / 2FA / OTP / Passkeys / Sessions / Rate-Limit / RBAC | **`sovereign-auth-architect`** | + `agy-code-guard` | ~30m–1h |
+| Login / Register / Account System / 2FA / OTP / Passkeys / Sessions / Rate-Limit / RBAC | **`qw-account-system`** | + `agy-code-guard` | ~30m–1h |
 | Web App Security & OWASP Audit | `security-auditor` | + `top-web-vulnerabilities` | ~45m |
 | Penetration Testing Checklist | `ethical-hacking-methodology` | + `pentest-checklist` | ~1h |
 | PR / Diff Security Review | `differential-review` | + `agy-code-guard` | ~20m |
@@ -183,7 +183,7 @@ End with: **"أي مهارة نعتمد، أو أبدأ بتنفيذ توصيت�
 ## Hard Rules (Zero Exceptions)
 
 1. **Constitutional Kernel Permanence:** Never turn off or skip `agy-output-style`, `agy-context-optimizer`, `agy-code-guard`, or `agy-error-protocol` regardless of which task skill is chosen.
-2. **Sovereign Auth Supremacy:** Always route authentication/account tasks directly to `sovereign-auth-architect`.
+2. **QW Auth Supremacy:** Always route authentication/account tasks directly to `qw-account-system`.
 3. **Excluded Skills Check:** Always inspect both `Available skills` and `excluded due to context budget limits` (reading lines `1–15` of `SKILL.md` for excluded candidates) before claiming a skill is not installed.
 4. **No Single-Item Comparison Tables:** Never draw a comparison table for 1 skill; use Fast-Track Mode when a clear winner (`>= 90%`) exists.
 5. **Context Before Questions:** Read project files (`<= 8` files) before asking anything; ask at most **1 question** only when context is genuinely missing.

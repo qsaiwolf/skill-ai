@@ -1,6 +1,6 @@
 # Layer 0: The Constitutional Kernel (النواة التأسيسية الإلزامية الدائمة)
 
-These 4 Foundational Kernel Skills + 1 Sovereign Domain Override are **NOT** ordinary candidate skills to be compared or voted on. They form the **permanent operating system** of the agent and MUST be enforced automatically across every routed workflow.
+These 4 Foundational Kernel Skills + 1 QW Domain Override are **NOT** ordinary candidate skills to be compared or voted on. They form the **permanent operating system** of the agent and MUST be enforced automatically across every routed workflow.
 
 ---
 
@@ -66,8 +66,9 @@ These 4 Foundational Kernel Skills + 1 Sovereign Domain Override are **NOT** ord
 
 ---
 
-## 5. Sovereign Domain Override (`sovereign-auth-architect`)
-**Path:** [`../sovereign-auth-architect/SKILL.md`](../sovereign-auth-architect/SKILL.md)  
+## 5. QW Domain Override (`qw-account-system`)
+**Path:** [`../qw-account-system/SKILL.md`](../qw-account-system/SKILL.md)  
 **Trigger:** Any request involving authentication, login, registration, user accounts, rate limiting, forbidden words/reserved usernames, OTP, 2FA (TOTP/Email/Passkeys), sessions, JWT rotation, CSRF, RBAC, sub-accounts, or security dashboards.
 
-- **Rule:** Route **100% unconditionally** to `sovereign-auth-architect` (plus the 4 `agy-*` kernels above). Never dilute or replace it with generic auth skills.
+- **Rule:** Route **100% unconditionally** to `qw-account-system` (plus the 4 `agy-*` kernels above). Never dilute or replace it with generic auth skills.
+
