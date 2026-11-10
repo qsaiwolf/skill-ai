@@ -1,6 +1,6 @@
 # Reference 07: Zero-Trust Enhancements — Homograph Defense, Sudo Mode, Dual-Handshake Email Change, Passkeys (WebAuthn), Anomaly Freeze, Impersonation & 14-Day Soft Delete
 
-This reference defines the 8 Zero-Trust enhancements that elevate the Sovereign Account System to Tier-0 financial/enterprise security.
+This reference defines the 8 Zero-Trust enhancements that elevate the QW Account System to Tier-0 financial/enterprise security.
 
 ---
 
@@ -251,7 +251,7 @@ export async function isPasswordBreachedHibp(
     const timeout = setTimeout(() => controller.abort(), 2500); // 2.5s timeout (fail-open on network outage)
 
     const res = await fetch(`https://api.pwnedpasswords.com/range/${prefix}`, {
-      headers: { "Add-Padding": "true", "User-Agent": "Sovereign-Auth-Guard" },
+      headers: { "Add-Padding": "true", "User-Agent": "QW-Account-Guard" },
       signal: controller.signal,
     });
     clearTimeout(timeout);

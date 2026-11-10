@@ -53,7 +53,7 @@ interface BucketEntry {
   resetAtMs: number;
 }
 
-export class SovereignRateLimiter {
+export class QwRateLimiter {
   private static readonly MAX_MEMORY_ENTRIES = 10_000;
   private static readonly buckets = new Map<string, BucketEntry>();
   private static cleanupTimer: NodeJS.Timeout | null = null;

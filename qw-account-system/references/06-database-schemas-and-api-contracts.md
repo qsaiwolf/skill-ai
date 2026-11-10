@@ -1,6 +1,6 @@
 # Reference 06: Complete Database Schemas, REST API Contracts & Verification Test Suite
 
-This reference provides the complete, production-ready database schema (Prisma / PostgreSQL / MySQL adaptable to Laravel migrations or SQL) and the standard API endpoint contracts and automated test checklist for the Sovereign Account System.
+This reference provides the complete, production-ready database schema (Prisma / PostgreSQL / MySQL adaptable to Laravel migrations or SQL) and the standard API endpoint contracts and automated test checklist for the QW Account System.
 
 ---
 

@@ -1,4 +1,4 @@
-# Pillar 5 & 7: Sovereign OTP, Dual-Channel 2FA, Trusted Devices & Hardened Email Delivery
+# Pillar 5 & 7: QW OTP, Dual-Channel 2FA, Trusted Devices & Hardened Email Delivery
 
 This reference defines the exact Purpose-Bound Salted HMAC OTP engine, RFC 6238 TOTP + RFC 4648 Base32 authenticator engine, Arabic/Persian numeral normalization, Admin 2FA Policy Governance, Encrypted Tamper-Resistant Trusted Device Cookie, Emergency Admin Bypass, and Hardened Email Infrastructure extracted across `Oman`, `PPU-Complaints-Public`, `pterodactyl`, `course_online`, `vehosts`, and `store`.
 
@@ -26,7 +26,7 @@ export function normalizeOtpCode(rawInput: string): string {
 A 6-digit numeric OTP has only $1,000,000$ possible values (`000000` to `999999`).
 - Storing the plaintext OTP in the database lets any read-only SQL injection or backup leak compromise every active verification/reset code.
 - Storing an unsalted `SHA-256(code)` allows an attacker to precompute all 1 million hashes in `< 5 milliseconds`.
-- **Sovereign Standard:** Every OTP is hashed using **HMAC-SHA256** with the server's `OTP_HMAC_SECRET`, bound to the **purpose**, **userId/identifier**, and a **per-code 16-byte random salt** (`codeSalt`):
+- **QW Standard:** Every OTP is hashed using **HMAC-SHA256** with the server's `OTP_HMAC_SECRET`, bound to the **purpose**, **userId/identifier**, and a **per-code 16-byte random salt** (`codeSalt`):
 
 $$\text{codeHash} = \text{HMAC-SHA256}\left(\text{OTP\_SECRET},\ \texttt{"otp:v1:"} \parallel \text{purpose} \parallel \texttt{":"} \parallel \text{targetId} \parallel \texttt{":"} \parallel \text{salt} \parallel \texttt{":"} \parallel \text{code}\right)$$
 
@@ -43,7 +43,7 @@ export type OtpPurpose =
   | 'PHONE_VERIFICATION'
   | 'SENSITIVE_ACTION';
 
-export class SovereignOtpEngine {
+export class QwOtpEngine {
   private static readonly CODE_TTL_MS = 10 * 60 * 1000; // 10 minutes
   private static readonly RESEND_COOLDOWN_MS = 60 * 1000; // 60 seconds
   private static readonly MAX_VERIFY_ATTEMPTS = 5; // Hard DB limit per issued code
@@ -119,7 +119,7 @@ export class SovereignOtpEngine {
 
 ## 3. Dual-Channel 2FA Engine: Authenticator App (RFC 6238 TOTP) + Email OTP (`Oman` & `pterodactyl`)
 
-A sovereign account system supports **both** Authenticator Apps (Google Authenticator, Authy, 1Password, Microsoft Authenticator) and Email/SMS OTP, governed by an Admin Policy Engine.
+The QW account system supports **both** Authenticator Apps (Google Authenticator, Authy, 1Password, Microsoft Authenticator) and Email/SMS OTP, governed by an Admin Policy Engine.
 
 ### 3.1 Pure RFC 6238 TOTP & RFC 4648 Base32 Implementation (Zero External Native Dependencies)
 

@@ -257,7 +257,7 @@ export async function verifyPassword(password: string, storedHash: string): Prom
 let DUMMY_PASSWORD_HASH: string | null = null;
 export async function verifyAgainstDummyPassword(candidatePassword: string): Promise<boolean> {
   if (!DUMMY_PASSWORD_HASH) {
-    DUMMY_PASSWORD_HASH = await hashPassword('Dummy_Sovereign_Constant_Time_Guard#2026!');
+    DUMMY_PASSWORD_HASH = await hashPassword('Dummy_QW_Constant_Time_Guard#2026!');
   }
   await verifyPassword(candidatePassword.slice(0, 128) || 'invalid_placeholder', DUMMY_PASSWORD_HASH);
   return false;

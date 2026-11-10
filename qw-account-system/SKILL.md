@@ -1,17 +1,17 @@
 ---
-name: sovereign-auth-architect
-description: Design, implement, and audit enterprise-grade authentication, login, registration, and sovereign account management systems. Use whenever the user asks to build or upgrade login, signup, user accounts, rate limiting, forbidden words/reserved usernames filter, email/phone normalization, OTP verification, dual-channel 2FA (TOTP Authenticator + Email OTP), trusted devices, password hashing/reset, sessions, JWT refresh rotation, CSRF protection, RBAC, sub-accounts, or account security dashboards.
+name: qw-account-system
+description: Design, implement, and audit enterprise-grade authentication, login, registration, and full-featured account management systems (qw-account-system / qw_accountSystem). Use whenever the user asks to build or upgrade login, signup, user accounts, rate limiting, forbidden words/reserved usernames filter, email/phone normalization, OTP verification, dual-channel 2FA (TOTP Authenticator + Email OTP), trusted devices, password hashing/reset, sessions, JWT refresh rotation, CSRF protection, RBAC, sub-accounts, or account security dashboards.
 ---
 
-# Sovereign Account & Authentication Architect (`sovereign-auth-architect`)
+# QW Account System Architect (`qw-account-system`)
 
-You are building the user's signature **12-Pillar Sovereign Account & Authentication System**—synthesized from 17 production codebases (`course_online`, `Oman`, `PPU-Complaints-Public`, `vehosts`, `pterodactyl/Slender`, `finflow-accounting`, `store`, `fluxer`, `msaea`, and `al-deeb-family`).
+You are building the user's signature **12-Pillar QW Account & Authentication System**—synthesized from 17 production codebases (`course_online`, `Oman`, `PPU-Complaints-Public`, `vehosts`, `pterodactyl/Slender`, `finflow-accounting`, `store`, `fluxer`, `msaea`, and `al-deeb-family`).
 
 Whenever invoked to design or implement login, registration, or account management, **never build a basic or toy auth flow**. Implement the complete, production-hardened 12-Pillar architecture below unless the user explicitly scopes down specific modules.
 
 ---
 
-## The 12-Pillar Sovereign Account Architecture
+## The 12-Pillar QW Account Architecture
 
 1. **Multi-Identifier & Canonicalized Identity Intake** ([`references/01-identity-validation-and-forbidden-words.md`](references/01-identity-validation-and-forbidden-words.md))
    - Single-field Login accepting **Email OR Username OR Phone Number** automatically.
@@ -40,7 +40,7 @@ Whenever invoked to design or implement login, registration, or account manageme
    - **Redis Primary + Bounded Memory Fallback:** Hard cap of `10,000` entries with 5-minute `unref()` TTL eviction timer (`OWASP API4:2023`) and standard RFC 429 headers (`Retry-After`, `X-RateLimit-*`).
    - **Account-Level Lockout:** 5 failed password attempts set `lockedUntil = now + 15m` on the `User` row; clear login throttle upon entering 2FA checkpoint.
 
-5. **Sovereign OTP & Dual-Channel 2FA Engine (TOTP + Email/SMS)** ([`references/04-otp-2fa-and-email-architecture.md`](references/04-otp-2fa-and-email-architecture.md))
+5. **QW OTP & Dual-Channel 2FA Engine (TOTP + Email/SMS)** ([`references/04-otp-2fa-and-email-architecture.md`](references/04-otp-2fa-and-email-architecture.md))
    - **Arabic/Persian Numeral Normalization:** Convert `٠-٩` and `۰-۹` to ASCII `0-9` before verification while preserving leading zeros.
    - **Purpose-Bound Salted HMAC-SHA256 OTP Storage:** Never store plaintext or unsalted 6-digit OTPs. Store `HMAC-SHA256(secret, "otp:v1:" + purpose + ":" + targetId + ":" + salt + ":" + code)` with `SELECT ... FOR UPDATE` row locking and a persistent DB counter burning the code after **5 failed attempts**.
    - **Pure RFC 6238 TOTP + RFC 4648 Base32 Engine:** 30s step, ±1 drift window, and `lastTotpStep` anti-replay tracking.
@@ -104,8 +104,8 @@ Read [`references/06-database-schemas-and-api-contracts.md`](references/06-datab
 ### Step 3: Core Security & Validation Engines
 1. **Identity & Forbidden Words:** Read [`references/01-identity-validation-and-forbidden-words.md`](references/01-identity-validation-and-forbidden-words.md) and implement `forbidden-words.ts` (all 5 categories in EN + AR + Arabizi), `EmailValidatorService`, `PhoneValidatorService`, and `UsernameValidatorService` (with Leet-Speak normalization).
 2. **Password Engine:** Read [`references/02-password-cryptography-and-strength.md`](references/02-password-cryptography-and-strength.md) and implement `PasswordStrengthService` (`zxcvbn` + contextual user inputs) and the bounded-queue `scrypt`/`bcrypt` hasher with `verifyAgainstDummyPassword()`.
-3. **Rate Limiter & Anti-Fraud:** Read [`references/03-rate-limiting-lockout-and-antifraud.md`](references/03-rate-limiting-lockout-and-antifraud.md) and implement `SovereignRateLimiter` (Dual-Bucket IP + SHA-256 ID, Redis + bounded 10k-entry memory fallback, RFC 429 headers, `withMinimumDuration(8000)` timing floor) plus Honeypot & Turnstile verification.
-4. **OTP, Dual-Channel 2FA & Email:** Read [`references/04-otp-2fa-and-email-architecture.md`](references/04-otp-2fa-and-email-architecture.md) and implement `normalizeOtpCode()` (Arabic/Persian digits), `SovereignOtpEngine` (Salted HMAC-SHA256 + 5-attempt DB burn + 60s cooldown), `TotpEngine` (RFC 6238 + anti-replay `lastTotpStep`), Trusted Device cookie encryption, and hardened SMTP/Email templates.
+3. **Rate Limiter & Anti-Fraud:** Read [`references/03-rate-limiting-lockout-and-antifraud.md`](references/03-rate-limiting-lockout-and-antifraud.md) and implement `QwRateLimiter` (Dual-Bucket IP + SHA-256 ID, Redis + bounded 10k-entry memory fallback, RFC 429 headers, `withMinimumDuration(8000)` timing floor) plus Honeypot & Turnstile verification.
+4. **OTP, Dual-Channel 2FA & Email:** Read [`references/04-otp-2fa-and-email-architecture.md`](references/04-otp-2fa-and-email-architecture.md) and implement `normalizeOtpCode()` (Arabic/Persian digits), `QwOtpEngine` (Salted HMAC-SHA256 + 5-attempt DB burn + 60s cooldown), `TotpEngine` (RFC 6238 + anti-replay `lastTotpStep`), Trusted Device cookie encryption, and hardened SMTP/Email templates.
 5. **Sessions, JWT Rotation, CSRF & RBAC:** Read [`references/05-sessions-jwt-csrf-and-rbac.md`](references/05-sessions-jwt-csrf-and-rbac.md) and implement session/token rotation, `tokenVersion` instant revocation, Dual-Phase CSRF, `sortOrder` RBAC guards, and `AuditLog` recording.
 
 ### Step 4: Frontend Auth Components & Security Center UI

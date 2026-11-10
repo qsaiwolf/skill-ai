@@ -1,6 +1,6 @@
-# المرجع الشامل ومعمارية نظام الحسابات والمصادقة السيادي (Sovereign Account & Auth Architecture Blueprint)
+# المرجع الشامل ومعمارية نظام الحسابات والمصادقة الشامل (QW) (QW Account System Architecture Blueprint)
 
-> **المهارة الرئيسية (Agent Skill):** [`SKILL.md`](./SKILL.md) (`sovereign-auth-architect`)  
+> **المهارة الرئيسية (Agent Skill):** [`SKILL.md`](./SKILL.md) (`qw-account-system`)  
 > **المستوى الأمني:** Tier-0 Zero-Trust Enterprise Architecture (13 ركيزة أساسية + 8 امتدادات Zero-Trust متقدمة).
 
 ---
@@ -10,17 +10,17 @@
 عندما تريد بناء نظام تسجيل دخول وتسجيل وحسابات متكامل في أي مشروع جديد أو قائم، يكفي أن تكتب للوكيل:
 
 ```text
-صمم نظام تسجيل الدخول والتسجيل والحسابات باستخدام sovereign-auth-architect
+صمم نظام تسجيل الدخول والتسجيل والحسابات باستخدام qw-account-system
 ```
 
 سيقوم الوكيل تلقائياً بقراءة [`SKILL.md`](./SKILL.md) وملفات المراجع السبعة داخل [`references/`](./references/) وتطبيق المعمارية الكاملة دون إغفال أي تفصيل أمني أو تجربة مستخدم.
 
 ---
 
-## 2. هيكلية ملفات المهارة (`sovereign-auth-architect`)
+## 2. هيكلية ملفات المهارة (`qw-account-system`)
 
 ```text
-sovereign-auth-architect/
+qw-account-system/
 ├── SKILL.md                                                   # المحرك الرئيسي وخطوات التنفيذ (Workflow)
 ├── BLUEPRINT.md                                               # هذا الدليل المرجعي الشامل (بالعربية)
 └── references/
