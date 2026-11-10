@@ -91,3 +91,4 @@ sovereign-auth-architect/
 6. **منع إعادة استخدام آخر كلمة مرور واحدة (`previousPasswordHash`) + فحص `k-Anonymity HIBP`:** منع مطابقة كلمة المرور الجديدة مع كلمة المرور الحالية أو السابقة مباشرة فقط (`previousPasswordHash` على جدول `User`)، مع فحص التسريبات عبر إرسال أول 5 حروف من `SHA-1` فقط لواجهة `HaveIBeenPwned`.
 7. **تقمص الحسابات الآمن للدعم الفني (`Cryptographic Admin Impersonation`):** جلسة ظل مؤقتة (15 دقيقة) مع إلزام ذكر السبب، ممنوعة من تعديل أمان الحساب، ومحمية ضد تقمص `isSupremeAdmin`.
 8. **الحذف المؤجل مع فترة سماح 14 يوماً (`14-Day Soft-Delete Grace Period`):** تحويل الحساب إلى `PENDING_DELETION` لمدة 14 يوماً مع إمكانية الاسترجاع بضغطة زر عند الدخول، والاحتفاظ بسجل `RegisteredIdentity` (المقبرة) بعد الحذف النهائي.
+
