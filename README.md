@@ -1,62 +1,90 @@
 # 🛡️ Skill-AI — Enterprise Agent Skills Repository
 
-مستودع المهارات الهندسية المتقدمة للوكلاء الذكيين (Antigravity / Claude Code / Cursor / Codex).
+Production-grade AI Agent Skills engineered for **Antigravity**, **Claude Code**, **Cursor**, and **Codex**.
 
 ---
 
-## 📂 هيكل المستودع (Repository Structure)
+## 📂 Repository Structure
 
 ```text
 skill-ai/
-├── README.md                                                  # دليل المستودع والتثبيت
-├── skill-router                                               # مهارة توجيه واختيار المهارات الذكية (Skill Router v3)
-└── sovereign-auth-architect/                                  # المعمارية السيادية لأنظمة الحسابات والمصادقة (Tier-0 Auth)
-    ├── SKILL.md                                               # ملف المهارة الرئيسي وتعليمات التنفيذ للوكيل
-    ├── BLUEPRINT.md                                           # الدليل المرجعي الشامل باللغة العربية
-    └── references/                                            # الوحدات المرجعية والكود المصدري الجاهز (7 مراجع)
-        ├── 01-identity-validation-and-forbidden-words.md      # الهوية الموحدة، تطبيع البريد/الهاتف، والقاموس الخماسي للمحظورات
-        ├── 02-password-cryptography-and-strength.md           # تشفير scrypt/bcrypt، طابور العمل المحدود، وفحص zxcvbn السياقي
-        ├── 03-rate-limiting-lockout-and-antifraud.md          # Rate Limiting مزدوج الوعاء، القفل التدريجي، ومقبرة الهويات الدائمة
-        ├── 04-otp-2fa-and-email-architecture.md               # محرك Salted HMAC OTP، التحقق الثنائي (TOTP + Email)، والأجهزة الموثوقة
-        ├── 05-sessions-jwt-csrf-and-rbac.md                   # الجلسات الكتومة، تدوير JWT، الطرد اللحظي، CSRF، وهرمية الصلاحيات
-        ├── 06-database-schemas-and-api-contracts.md           # مخطط قاعدة البيانات الكامل (14 جدولاً)، عقود API، والاختبارات الـ 12
-        └── 07-advanced-zero-trust-and-passkeys.md             # الإضافات الـ 8 المتقدمة (Passkeys, Sudo Mode, 72h Revert, Freeze...)
+├── README.md                                                  # Repository index & installation guide
+├── skill-router                                               # Intelligent skill routing & comparison engine (v3.0)
+└── sovereign-auth-architect/                                  # Tier-0 Zero-Trust Account & Authentication Architect
+    ├── SKILL.md                                               # Primary agent skill instructions & execution workflow
+    ├── BLUEPRINT.md                                           # Comprehensive architectural blueprint (Arabic reference)
+    └── references/                                            # Modular copy-pasteable engineering specifications (7 modules)
+        ├── 01-identity-validation-and-forbidden-words.md      # Multi-identifier intake, Gmail/E.164 normalization & 5-category blocklist
+        ├── 02-password-cryptography-and-strength.md           # Bounded scrypt/bcrypt worker queue, constant-time dummy hash & zxcvbn
+        ├── 03-rate-limiting-lockout-and-antifraud.md          # Dual-bucket rate limiting, progressive lockout & identity graveyard
+        ├── 04-otp-2fa-and-email-architecture.md               # Salted HMAC-SHA256 OTP, RFC 6238 TOTP, trusted devices & hardened SMTP
+        ├── 05-sessions-jwt-csrf-and-rbac.md                   # Opaque __Host- sessions, JWT rotation, <2ms revocation, CSRF & RBAC
+        ├── 06-database-schemas-and-api-contracts.md           # Complete 14-model Prisma/SQL schema, REST API contracts & 12-test suite
+        └── 07-advanced-zero-trust-and-passkeys.md             # Passkeys (WebAuthn), Sudo Mode, 72h email revert, freeze & 14d soft-delete
 ```
 
 ---
 
-## 🚀 المهارات المتوفرة (Included Skills)
+## 🚀 Included Skills
 
-### 1. [`sovereign-auth-architect`](./sovereign-auth-architect/SKILL.md) — نظام الحسابات والمصادقة السيادي
-مهارة شاملة لبناء وتدقيق أنظمة تسجيل الدخول، التسجيل، وإدارة الحسابات بمستوى أمان البنوك والمنصات الكبرى (**13 ركيزة أساسية + 8 امتدادات Zero-Trust**):
-- **الهوية الموحدة والقاموس الخماسي للمحظورات:** دخول بحقل موحد (بريد / اسم مستخدم / هاتف `E.164`)، تطبيع Gmail (إزالة `.` و `+tag`)، حظر البريد المؤقت، فلتر `Leet-Speak`، ومنع التزوير البصري (`Unicode Homograph & Zero-Width Sanitizer`)، مع قاموس خماسي يحظر الأسماء المحجوزة للنظام، الكلمات النابية (عربي/إنجليزي/فرانكو)، الأسماء الدينية المقدسة، وأسماء العلامات التجارية.
-- **التشفير وحماية المعالج والذاكرة:** تشفير `scrypt` (`128 MiB`) أو `bcrypt` (`12 rounds`) محمي بطابور عمل محدود (`Bounded Worker Queue` يرجع `503 AUTH_BUSY` لمنع هجمات DoS)، تصفير الذاكرة (`Buffer.fill(0)`)، الهاش الوهمي المتساوي زمنياً لمنع كشف الحسابات، فحص `zxcvbn` السياقي، فحص التسريبات (`k-Anonymity HIBP`)، ومنع إعادة استخدام كلمة المرور الحالية أو السابقة مباشرة (`previousPasswordHash`).
-- **Rate Limiting مزدوج ومقبرة الهويات:** تحديد معدل الطلبات عبر وعاء مزدوج (`IP` + `SHA-256(identifier)`) بذاكرة محمية السعة (`10,000` حد أقصى)، أرضية زمنية 8 ثوانٍ لاستعادة كلمة المرور، قفل تدريجي للحساب بعد 5 محاولات، Honeypot + Turnstile، ومقبرة هويات دائمة (`RegisteredIdentity`) تمنع استغلال الفترات التجريبية أو الالتفاف على الحظر بعد حذف الحساب.
-- **محرك OTP و 2FA مزدوج القناة + Passkeys (`WebAuthn`):** تطبيع الأرقام العربية/الفارسية (`٠-٩`)، تخزين OTP بـ `Salted HMAC-SHA256` مرتبط بالغرض مع قفل الصف (`FOR UPDATE`) وحرق الرمز بعد 5 محاولات خاطئة، دعم `RFC 6238 TOTP` + `Email OTP` + `Passkeys (FIDO2)`، كوكي الجهاز الموثوق المشفر لمدة 30 يوماً، وحماية الأدمن الأعلى (`Supreme Admin Guard`).
-- **الجلسات، الطرد اللحظي، و Zero-Trust:** جلسات `__Host-` أو تدوير `JWT Refresh` مع كشف السرقة (`Reuse Detection`)، طرد عالمي لحظي عبر `tokenVersion` في `< 2ms`، وضع `Sudo Mode` (10 دقائق) للعمليات الحساسة، تغيير البريد المزدوج مع رابط تراجع طارئ صالح لـ 72 ساعة، كاشف السفر المستحيل مع زر تجميد فوري للحساب، تقمص آمن للدعم الفني (`Shadow Session`)، وحذف مؤجل بفترة سماح 14 يوماً.
+### 1. [`sovereign-auth-architect`](./sovereign-auth-architect/SKILL.md) — Sovereign Account & Authentication System
+An end-to-end, financial-grade authentication and account management skill encompassing **13 Core Pillars + 8 Zero-Trust Extensions**:
 
-📖 **اقرأ الدليل العربي الكامل هنا:** [`sovereign-auth-architect/BLUEPRINT.md`](./sovereign-auth-architect/BLUEPRINT.md)
+- **Multi-Identifier Intake & 5-Category Forbidden Dictionary:**
+  - Single-field login supporting **Email OR Username OR Phone Number (`E.164`)**.
+  - **Gmail Canonicalization** (dot `.` stripping, `+tag` removal, `@googlemail.com` normalization) + trusted provider whitelist + `.edu`/`.gov` support + 25+ disposable email domain blocklist.
+  - **Unicode Homograph, Zero-Width & Leet-Speak Sanitizer** (`NFKC` normalization, Cyrillic/Greek confusable folding, invisible/bidi character stripping) + **5-Category Bilingual Blocklist** (System/Admin reserved handles, English profanity, Arabic & Franco-Arab/Arabizi profanity, sacred religious terms, and global brand names) + dynamic `ProfileSubstringBan`.
+- **Password Cryptography & DoS-Resilient Hashing:**
+  - `scrypt` (`N=131072, r=8, p=1, 64B`) or `bcrypt` (`12 rounds`) protected by a **Bounded Worker Queue** (max 2 active + 8 queued; excess requests fail fast with `503 AUTH_BUSY` to prevent CPU/RAM exhaustion).
+  - Memory buffer zeroization (`Buffer.fill(0)`), constant-time dummy hash verification (`verifyAgainstDummyPassword`), contextual `zxcvbn` scoring, privacy-preserving **k-Anonymity HaveIBeenPwned** check, and **Last-1 Password Reuse Prevention (`previousPasswordHash`)**.
+- **Dual-Bucket Rate Limiting, Anti-Fraud & Permanent Identity Graveyard:**
+  - Dual-Bucket (`IP` + `SHA-256(identifier)`) sliding limits across all auth endpoints with Redis primary + bounded 10,000-entry memory fallback (`OWASP API4:2023`) and standard RFC `429` headers.
+  - Minimum **8-second response floor** (`withMinimumDuration(8000)`) on password reset requests to eliminate SMTP timing side-channels.
+  - Account-level progressive lockout (`lockedUntil` after 5 failed attempts), Honeypot + Cloudflare Turnstile / reCAPTCHA, MaxMind minFraud scoring, referral IP anti-farming, and a **Permanent `RegisteredIdentity` Graveyard** that survives account deletion to prevent free-trial abuse and ban evasion.
+- **Sovereign OTP, Dual-Channel 2FA & WebAuthn Passkeys:**
+  - Automatic Eastern Arabic (`٠-٩`) and Persian (`۰-۹`) numeral normalization preserving leading zeros.
+  - **Purpose-Bound Salted HMAC-SHA256 OTP Storage** with `SELECT ... FOR UPDATE` row-level locking, 60-second resend cooldown, and automatic code burn after **5 failed attempts**.
+  - **Dual-Channel 2FA (`RFC 6238 TOTP` + `Email OTP`)** with `lastTotpStep` anti-replay protection, **WebAuthn / Passkeys (`FIDO2`)** with `signCount` clone detection, Admin 2FA policy governance with **Anti-Trap Checkpoint Guard**, 8 single-use recovery codes, `AES-256-GCM` encrypted **Trusted Device Cookie** (`30d`), and a 15-minute Admin Emergency Bypass Code with **Supreme Admin Guard**.
+- **Sessions, `<2ms` Global Revocation, Zero-Trust Controls & RBAC:**
+  - Hardened `__Host-session` cookies or `JWT Access (15m) + Refresh Token Rotation (1d/30d)` with **Reuse Detection** and `<2ms` global session revocation via `tokenVersion` bumping + zero-downtime `kid` key rotation.
+  - **Step-Up Authentication (`Sudo Mode` — 10m window)** for sensitive actions, **Dual-Handshake Email Change** with a **72-hour single-click Emergency Revert Link**, **Impossible Travel & New-Device Detection** with one-click **Emergency Account Freeze**, **Cryptographic Admin Impersonation (`Shadow Session`)**, and a **14-Day Soft-Delete Grace Period (`PENDING_DELETION`)**.
+  - Dual-Phase CSRF protection, hierarchical RBAC (`sortOrder`), bitwise `AccountPermission` flags, 48-hour `SubAccountInvitation` team flows, OAuth unlink lockout prevention, inline **Unverified Account Recovery Banner**, and a full **Account Security Center** (`0–100` Security Health Score, Active Device Manager, Audit Log, and `GDPR/PDPL` JSON data export).
+
+📖 **Additional Documentation:**
+- **Skill Specification (English):** [`sovereign-auth-architect/SKILL.md`](./sovereign-auth-architect/SKILL.md)
+- **Architectural Blueprint (Arabic):** [`sovereign-auth-architect/BLUEPRINT.md`](./sovereign-auth-architect/BLUEPRINT.md)
 
 ---
 
-### 2. [`skill-router`](./skill-router) — موجه المهارات الذكي (v3.0)
-مهارة لتوجيه الوكيل تلقائياً لاختيار المهارة الأنسب للمهمة أو المقارنة بين المهارات المتوفرة أو ربط عدة مهارات في مسار عمل متسلسل.
+### 2. [`skill-router`](./skill-router) — Intelligent Skill Router (v3.0)
+Context-aware routing engine that compares installed skills, selects the optimal workflow (Comparison, Auto-Pilot, or Hybrid mode), and chains multiple skills sequentially.
 
 ---
 
-## ⚙️ طريقة التثبيت (Installation)
+## ⚙️ Installation
 
-انسخ مجلد المهارة إلى مسار مهارات الوكيل على جهازك:
+Clone this repository and copy the desired skill into your agent's skills directory:
 
-### في Windows (PowerShell):
+### Windows (PowerShell)
 ```powershell
 git clone https://github.com/qsaiwolf/skill-ai.git
 Copy-Item -Path ".\skill-ai\sovereign-auth-architect" -Destination "$HOME\.gemini\config\skills\sovereign-auth-architect" -Recurse -Force
 ```
 
-### في macOS / Linux:
+### macOS / Linux
 ```bash
 git clone https://github.com/qsaiwolf/skill-ai.git
 cp -r ./skill-ai/sovereign-auth-architect ~/.gemini/config/skills/sovereign-auth-architect
 ```
-*(أو ضعها داخل `.claude/skills/sovereign-auth-architect` في حال استخدام Claude Code).*
+
+*(For Claude Code, copy into `~/.claude/skills/sovereign-auth-architect` or `.claude/skills/sovereign-auth-architect`).*
+
+---
+
+## 💻 Usage
+
+Invoke `sovereign-auth-architect` in any new or existing project by prompting your agent:
+
+```text
+Design and implement the complete login, registration, and account security system using sovereign-auth-architect.
+```
