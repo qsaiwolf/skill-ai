@@ -18,12 +18,17 @@ Whenever invoked to design or implement login, registration, or account manageme
    - **Email Normalization & Domain Governance:** Reject control chars (`/[\u0000-\u001f\u007f]/`), canonicalize Gmail (`.` dot-stripping, `+tag` subaddress stripping, `@googlemail.com` -> `@gmail.com` to stop multi-account farming), block 25+ disposable mail domains (`mailinator`, `yopmail`, `10minutemail`, `mohmal`, etc.), and enforce trusted provider whitelist + `.edu`/`.gov` TLD support (or strict institutional regex when requested).
    - **Phone E.164 Validation:** Normalize via `libphonenumber-js`, convert leading `00` to `+`, and reject sequential/repeating dummy numbers (`11111111`, `1234567`).
 
-2. **5-Category Forbidden Words, Reserved Usernames & Leet-Speak Filter** ([`references/01-identity-validation-and-forbidden-words.md`](references/01-identity-validation-and-forbidden-words.md))
+2. **3-Level / 5-Category Forbidden Words, Reserved Usernames & Leet-Speak Filter** ([`references/01-identity-validation-and-forbidden-words.md`](references/01-identity-validation-and-forbidden-words.md))
    - **Username Rules:** 5–30 chars, lowercase `a-z0-9._`, starts with a letter, at least 3 letters, cannot end with `.` or `_`, no consecutive separators (`..`, `__`, `._`, `_.`).
    - **Leet-Speak De-Obfuscation:** Normalize `@/4->a`, `3->e`, `1/!->i`, `0->o`, `$/5->s`, `7->t` and strip separators before checking blocklists.
-   - **5-Category Bilingual Dictionary:**
+   - **3 Progressive Dictionary Tiers (1,081 Unique Words across 5 Categories):**
+     - **Level 1 (`1` / `Essential` — ~260 words):** Core system/admin reserved handles (EN + AR), high-severity profanity roots (EN/AR/Arabizi), core sacred names, and top impersonated tech brands.
+     - **Level 2 (`2` / `Standard` — ~540 words):** Level 1 + infrastructure/network/panel routes (`pterodactyl`, `wings`, `daemon`, `cpanel`, `nginx`, `ssh`, `smtp`, `oauth2`, `2fa`), expanded profanity/NSFW/extremism, Asmaul Husna & Prophets, and 50+ global tech/gaming/finance brands.
+     - **Level 3 (`3` / `Maximum Fortress` — 1,081 words, Default):** Level 1 + Level 2 + the complete unabridged Arabizi/Franco-Arab inflection matrix (`kos*`, `zeb*`, `ayre*`, `sharmouta*`, `manyook*`, `gahba*`, `9a7ba*`, `3ars*`, `kalb*`, `hmar*`, `7mar*`, `hayawan*`, `khanzir*`, `khara*`, `zibil*`, `teez*`, `ba3bous*`, `kessrabak*`, `yen3al*`, `ebnel*`, `weldel*`, `ibnelharam*`) and extended English compound slurs.
+     - **Inviolable Additive Merge Rule:** When upgrading an existing codebase that already has a forbidden words list, **NEVER delete or shrink existing words**—always compute `EXISTING_PROJECT_WORDS ∪ SELECTED_TIER_WORDS`.
+   - **5-Category Bilingual Coverage:**
      1. *System & Official Reserved (EN + AR):* `admin`, `root`, `support`, `staff`, `moderator`, `system`, `official`, `verified`, `api`, `webhook`, `ادمن`, `أدمن`, `مدير`, `إدارة`, `مشرف`, `دعم`, `رسمي`, `موثق` (plus critical substring ban anywhere in handle).
-     2. *English Profanity & NSFW.*
+     2. *English Profanity, NSFW & Extremism.*
      3. *Arabic Script & Franco-Arab (Arabizi) Profanity* (`شرموطة`, `قحبة`, `كسم`, `عرص`, `خول`, `sharmouta`, `qa7ba`, `ksmk`, `3ars`, `5ara`, etc.).
      4. *Sacred Religious Names & Figures (AR/EN)* to prevent handle desecration.
      5. *Global Brand Names* (`google`, `apple`, `microsoft`, `stripe`, `paypal`, `discord`, etc.) to prevent impersonation.

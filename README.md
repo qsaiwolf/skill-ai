@@ -17,7 +17,7 @@ skill-ai/
 │   ├── SKILL.md                                               # Primary agent skill instructions & execution workflow
 │   ├── BLUEPRINT.md                                           # Comprehensive architectural blueprint (Arabic reference)
 │   └── references/                                            # Modular copy-pasteable engineering specifications (7 modules)
-│       ├── 01-identity-validation-and-forbidden-words.md      # Multi-identifier intake, Gmail/E.164 normalization & 5-category blocklist
+│       ├── 01-identity-validation-and-forbidden-words.md      # Multi-identifier intake, Gmail/E.164 normalization & 3-tier 1,081-word blocklist
 │       ├── 02-password-cryptography-and-strength.md           # Bounded scrypt/bcrypt worker queue, constant-time dummy hash & zxcvbn
 │       ├── 03-rate-limiting-lockout-and-antifraud.md          # Dual-bucket rate limiting, progressive lockout & identity graveyard
 │       ├── 04-otp-2fa-and-email-architecture.md               # Salted HMAC-SHA256 OTP, RFC 6238 TOTP, trusted devices & hardened SMTP
@@ -57,7 +57,7 @@ Unlike standard task skills, the **Constitutional Kernel** skills are permanentl
 
 ### 1. [`qw-account-system`](./qw-account-system/SKILL.md) (`qw_accountSystem`) — QW Account & Authentication System
 An end-to-end, enterprise-grade authentication and account management skill (**13 Core Pillars + 8 Zero-Trust Extensions**):
-- **Multi-Identifier Intake & 5-Category Forbidden Dictionary:** Single-field login (`Email / Username / E.164 Phone`), Gmail canonicalization, 25+ disposable domain blocklist, Unicode Homograph & Zero-Width sanitizer, Leet-Speak filter, and a 5-category bilingual blocklist (System/Admin handles, EN profanity, AR & Franco/Arabizi profanity, sacred religious terms, and global brand names).
+- **Multi-Identifier Intake & 3-Tier / 5-Category Master Forbidden Dictionary (`1,081` Words):** Single-field login (`Email / Username / E.164 Phone`), Gmail canonicalization, 25+ disposable domain blocklist, Unicode Homograph & Zero-Width sanitizer, Leet-Speak filter, and a **3-Level Progressive Master Dictionary (`Level 1 Essential ~260 words`, `Level 2 Standard ~540 words`, `Level 3 Maximum Fortress 1,081 words`)** across 5 categories (System/Admin handles, EN profanity, AR & Franco/Arabizi profanity, sacred religious terms, and global brand names) with a strict **Zero-Deletion Additive Merge Rule**.
 - **Password Cryptography & DoS-Resilient Hashing:** `scrypt` (`128 MiB`) or `bcrypt` (`12 rounds`) protected by a **Bounded Worker Queue** (`503 AUTH_BUSY` DoS protection), memory buffer zeroization, constant-time dummy hash verification, contextual `zxcvbn`, privacy-preserving **k-Anonymity HaveIBeenPwned** check, and **Last-1 Password Reuse Prevention (`previousPasswordHash`)**.
 - **Dual-Bucket Rate Limiting, Anti-Fraud & Permanent Identity Graveyard:** Dual-Bucket (`IP` + `SHA-256(identifier)`) limits with Redis primary + bounded 10,000-entry memory fallback (`OWASP API4:2023`), 8-second forgot-password timing floor, progressive account lockout, Honeypot + Turnstile, and a **Permanent `RegisteredIdentity` Graveyard** that survives account deletion.
 - **QW OTP, Dual-Channel 2FA & WebAuthn Passkeys:** Eastern Arabic/Persian numeral normalization (`٠-٩`), **Purpose-Bound Salted HMAC-SHA256 OTP** with `FOR UPDATE` row locking and 5-attempt burn, **RFC 6238 TOTP + Email OTP**, **WebAuthn / Passkeys (`FIDO2`)** with `signCount` clone detection, `AES-256-GCM` **Trusted Device Cookie** (`30d`), and **Supreme Admin Guard**.

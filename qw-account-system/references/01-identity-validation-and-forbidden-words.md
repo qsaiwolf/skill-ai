@@ -230,28 +230,74 @@ export function normalizeLeetSpeak(input: string): string {
 }
 ```
 
-### 4.3 The 5-Category Master Forbidden Words Dictionary
+### 4.3 The 3-Level / 5-Category Master Forbidden Words Dictionary (1,081 Unique Words)
 
-Include this dictionary in every project (`src/data/forbidden-words.ts` or `app/Rules/NotReservedUsername.php`):
+> **Inviolable Additive Merge Rule (Zero-Deletion Guarantee):**
+> When upgrading an existing codebase that already contains a forbidden usernames/words dictionary, you **MUST NEVER delete or shrink existing entries**. Always compute the union `EXISTING_PROJECT_WORDS ∪ SELECTED_TIER_WORDS` so zero existing blocked words are ever lost.
+
+#### The 3 Progressive Enforcement Levels (selectable via Admin Panel or Config)
+- **Level 1 (`1` / `'essential'` — ~260 words):** Core system/admin reserved handles (EN + AR), high-severity primary profanity roots (English, Arabic script, and core Arabizi roots), core sacred names, and top impersonated tech brands.
+- **Level 2 (`2` / `'standard'` — ~540 words):** Includes **all of Level 1** + infrastructure/network/panel reserved terms (`pterodactyl`, `wings`, `daemon`, `cpanel`, `nginx`, `ssh`, `smtp`, `oauth2`, `2fa`, etc.), expanded English/Arabic profanity, extremism/terrorism/illicit terms, full sacred names (Asmaul Husna & Prophets), and 50+ global tech/gaming/finance brands.
+- **Level 3 (`3` / `'maximum'` — 1,081 words, Recommended Default):** Includes **all of Level 1 + Level 2** + the complete, unabridged Arabizi/Franco-Arab inflection matrix (`kos*`, `zeb*`, `ayre*`, `sharmouta*`, `manyook*`, `gahba*`, `9a7ba*`, `3ars*`, `kalb*`, `hmar*`, `7mar*`, `hayawan*`, `khanzir*`, `khara*`, `5ara*`, `zibil*`, `teez*`, `ba3bous*`, `kessrabak*`, `yen3al*`, `ebnel*`, `weldel*`, `ibnelharam*`) and extended English slang/compound slurs.
+
+Include this dictionary in every project (`src/data/forbidden-words.ts` or `config/slender_forbidden_usernames.php`):
 
 ```typescript
-// Category 1: System, Admin, Technical & Official Reserved Handles (EN + AR)
-export const RESERVED_SYSTEM_WORDS = [
-  'admin', 'administrator', 'root', 'system', 'sysadmin', 'owner', 'master',
-  'superadmin', 'superuser', 'supervisor', 'moderator', 'mod', 'staff', 'support',
-  'helpdesk', 'help', 'info', 'contact', 'sales', 'billing', 'security', 'abuse',
-  'postmaster', 'webmaster', 'hostmaster', 'official', 'verified', 'bot', 'robot',
-  'api', 'graphql', 'webhook', 'webhooks', 'oauth', 'auth', 'login', 'logout',
-  'signin', 'signup', 'register', 'password', 'reset', 'verify', 'checkpoint',
-  'dashboard', 'panel', 'console', 'portal', 'settings', 'profile', 'account',
-  'user', 'users', 'client', 'clients', 'customer', 'guest', 'anonymous',
-  'null', 'undefined', 'void', 'true', 'false', 'nan', 'infinity',
-  'test', 'testing', 'demo', 'dev', 'staging', 'prod', 'production', 'localhost',
-  'www', 'mail', 'smtp', 'imap', 'pop', 'ftp', 'ssh', 'cdn', 'assets', 'static',
+export type ForbiddenDictionaryTier = 1 | 2 | 3;
+
+// ============================================================================
+// CATEGORY 1: SYSTEM, ADMIN, TECHNICAL & OFFICIAL RESERVED HANDLES (EN + AR)
+// ============================================================================
+export const RESERVED_SYSTEM_WORDS_L1 = [
+  // English Administrative & Core System
+  'admin', 'administrator', 'administrateur', 'administrador', 'admin1', 'admin2', 'adminroot',
+  'root', 'superuser', 'superadmin', 'supervisor', 'sys', 'sysadmin', 'system', 'systemadmin', 'systemuser',
+  'master', 'owner', 'coowner', 'founder', 'cofounder', 'creator', 'director', 'executive',
+  'staff', 'staffmember', 'team', 'official', 'verified', 'support', 'supportteam', 'helpdesk',
+  'help', 'service', 'services', 'desk', 'serviceclient', 'customer', 'care', 'info', 'information',
+  'contact', 'contactus', 'inquiry', 'feedback', 'inquiries', 'sales', 'billing', 'finance',
+  'payment', 'payments', 'invoice', 'invoices', 'accounting', 'legal', 'law', 'compliance',
+  'security', 'securityteam', 'abuse', 'secops', 'devops', 'sysops', 'netops', 'audit', 'auditor',
+  'moderator', 'moderation', 'mod', 'mods', 'leadmod', 'headmod', 'community', 'manager',
+  'postmaster', 'webmaster', 'hostmaster',
   // Arabic Official & System Terms
-  'ادمن', 'أدمن', 'إدمن', 'مدير', 'المدير', 'إدارة', 'ادارة', 'الإدارة',
-  'مشرف', 'المشرف', 'دعم', 'الدعم', 'فريق', 'النظام', 'نظام', 'رسمي', 'موثق',
+  'ادمن', 'أدمن', 'إدمن', 'الادمن', 'الأدمن', 'مدير', 'المدير', 'مدير_النظام', 'إدارة', 'ادارة', 'الإدارة', 'الادارة',
+  'مشرف', 'المشرف', 'مشرفة', 'المشرفة', 'مشرفين', 'المشرفين', 'طاقم', 'الطاقم', 'طاقم_العمل',
+  'فريق', 'الفريق', 'فريق_العمل', 'دعم', 'الدعم', 'دعم_فني', 'الدعم_الفني', 'خدمة_العملاء',
+  'مساعد', 'المساعد', 'مساعدة', 'المساعدة', 'رسمي', 'الرسمي', 'موثق', 'الموثق', 'حساب_رسمي',
+  'مالك', 'المالك', 'صاحب_الموقع', 'مؤسس', 'المؤسس', 'مسؤول', 'المسؤول', 'مسؤول_النظام',
+  'سيرفر', 'خادم', 'الخادم', 'لوحة_التحكم', 'لوحة', 'نظام', 'النظام', 'بوت', 'روبوت',
   'حساب', 'مستخدم', 'زائر', 'تجريبي', 'تطبيق', 'موقع',
+];
+
+export const RESERVED_SYSTEM_WORDS_L2 = [
+  'developer', 'developerteam', 'dev', 'devteam', 'engineer', 'architect', 'coder', 'programmer',
+  'tester', 'qa', 'test', 'testing', 'staging', 'production', 'prod', 'demo', 'sandbox', 'beta',
+  'alpha', 'trial', 'preview', 'internal', 'staging1', 'prod1', 'stage', 'release',
+  'pterodactyl', 'ptero', 'wings', 'daemon', 'node', 'nodes', 'panel', 'dashboard', 'console', 'portal', 'cpanel', 'whm',
+  'slender', 'slendertheme', 'slenderpanel', 'slendersystem', 'slenderserver', 'slendersoftware',
+  'vehosts', 'qsai', 'qsaiwolf', 'jexactyl', 'pelican', 'multicraft', 'tcadmin', 'pterodactylpanel',
+  'api', 'apiv1', 'apiv2', 'api-client', 'api-application', 'graphql', 'rest', 'webhook',
+  'webhooks', 'endpoint', 'endpoints', 'server', 'servers', 'client', 'clients', 'remote',
+  'network', 'gateway', 'router', 'switch', 'firewall', 'proxy', 'reverseproxy', 'nginx',
+  'apache', 'caddy', 'cloudflare', 'socket', 'websocket', 'wss', 'ssl', 'tls', 'cert',
+  'certificate', 'domain', 'dns', 'nameserver', 'ns1', 'ns2', 'ns3', 'www', 'mx', 'mail', 'ftp', 'sftp',
+  'ssh', 'telnet', 'smtp', 'pop', 'pop3', 'imap', 'http', 'https', 'cdn', 'assets', 'static', 'localhost', '127.0.0.1',
+  'null', 'undefined', 'void', 'true', 'false', 'nan', 'infinity', 'anonymous', 'anon', 'nobody', 'guest',
+  'user', 'users', 'member', 'members', 'account', 'accounts', 'profile', 'profiles', 'setting', 'settings', 'config',
+  'configuration', 'install', 'installer', 'setup', 'update', 'updater', 'upgrade', 'patch',
+  'auth', 'authenticate', 'authentication', 'authorize', 'authorization', 'login', 'signin',
+  'sign-in', 'log-in', 'logout', 'signout', 'sign-out', 'log-out', 'register', 'registration',
+  'signup', 'sign-up', 'password', 'passwords', 'passwd', 'reset', 'reset-password', 'forgot-password',
+  'verify', 'verification', 'verify-email', 'checkpoint', 'two-factor', 'totp', '2fa', 'mfa',
+  'oauth', 'oauth2', 'session', 'sessions', 'cookie', 'cookies', 'token', 'tokens',
+  'secret', 'secrets', 'key', 'keys', 'public', 'private', 'storage',
+  'database', 'databases', 'db', 'mysql', 'mariadb', 'postgres', 'postgresql', 'redis',
+  'cache', 'memcached', 'queue', 'queues', 'worker', 'workers', 'cron', 'cronjob', 'jobs',
+  'backup', 'backups', 'restore', 'snapshot', 'activity', 'activity-log', 'audit-log',
+  'terms', 'tos', 'privacy', 'privacy-policy', 'rules', 'status', 'uptime', 'maintenance',
+  'terms-of-service', 'dmca', 'copyright', 'trademark', 'press', 'careers', 'blog',
+  'news', 'announcements', 'discord-bot', 'bot', 'bots', 'robot', 'crawler', 'spider',
 ];
 
 // Critical substrings that must NEVER appear anywhere inside a non-admin username
@@ -260,70 +306,185 @@ export const CRITICAL_BANNED_SUBSTRINGS = [
   'support', 'official', 'verified', 'security', 'helpdesk',
 ];
 
-// Category 2: English Profanity, Slurs & NSFW
-export const BANNED_ENGLISH_PROFANITY = [
-  'fuck', 'fucker', 'fucking', 'motherfucker', 'fck', 'fuk', 'shit', 'shitty',
-  'bullshit', 'bitch', 'bitches', 'ass', 'asshole', 'bastard', 'dick', 'dickhead',
-  'cock', 'cocks', 'pussy', 'cunt', 'whore', 'slut', 'skank', 'fag', 'faggot',
-  'nigger', 'nigga', 'retard', 'retarded', 'rape', 'rapist', 'pedo', 'pedophile',
-  'porn', 'porno', 'xxx', 'sex', 'sexy', 'nsfw', 'nude', 'nudes', 'hentai',
-  'boobs', 'tits', 'titties', 'penis', 'vagina', 'dildo', 'orgasm', 'masturbate',
-  'blowjob', 'handjob', 'anal', 'cum', 'jizz', 'wank', 'wanker', 'twat', 'prick',
-  ' piss', 'pissed', 'damn', 'hell', 'crap', 'suck', 'sucks', 'kill', 'murder',
-  'terrorist', 'isis', 'daesh', 'nazi', 'hitler', 'suicide', 'scam', 'scammer',
+// ============================================================================
+// CATEGORY 2: ENGLISH PROFANITY, SLURS, NSFW & EXTREMISM (L1 / L2 / L3)
+// ============================================================================
+export const BANNED_ENGLISH_PROFANITY_L1 = [
+  'fuck', 'fucker', 'fuckers', 'fucking', 'fuckoff', 'fuckup', 'fuckyou', 'fck', 'fuk', 'motherfucker', 'mothafucka',
+  'shit', 'shits', 'shitty', 'shithead', 'bullshit', 'bitch', 'bitches', 'bitching', 'bitchy',
+  'ass', 'asshole', 'arse', 'arsehole', 'bastard', 'cunt', 'cunts', 'dick', 'dicks', 'dickhead',
+  'cock', 'cocks', 'cockhead', 'cocksucker', 'pussy', 'pussies', 'whore', 'whores', 'slut', 'sluts', 'slutty',
+  'nigger', 'niggers', 'nigga', 'niggas', 'fag', 'faggot', 'faggots', 'faggy', 'dyke', 'kike', 'kyke', 'chink', 'spic',
+  'retard', 'retarded', 'rape', 'rapist', 'pedo', 'paedo', 'pedophile',
+  'porn', 'porno', 'pornography', 'xxx', 'sex', 'sexy', 'nude', 'nudes', 'naked', 'nsfw', 'hentai',
 ];
 
-// Category 3: Arabic & Franco-Arab (Arabizi) Profanity
-export const BANNED_ARABIC_AND_FRANCO_PROFANITY = [
-  // Arabic Script
-  'شرموط', 'شرموطة', 'شرموطه', 'قحبة', 'قحبه', 'قحاب', 'عاهرة', 'عاهره', 'زانية',
-  'كس', 'كسم', 'كسمك', 'كسمكم', 'زب', 'زبي', 'طيز', 'طيزك', 'نيك', 'منيوك',
-  'منيوكة', 'متناك', 'متناكة', 'عرص', 'معرص', 'خول', 'خولات', 'لوطي', 'شاذ',
-  'قواد', 'ديوث', 'منحط', 'سافل', 'واطي', 'وسخ', 'زبالة', 'زباله', 'حمار',
-  'كلب', 'حيوان', 'خنزير', 'خرا', 'خرة', 'زق', 'يلعن', 'ملعون', 'لعنة',
-  'اباحي', 'إباحي', 'سكس', 'بورن', 'عاري', 'عارية', 'انتحار', 'ارهاب', 'إرهاب',
-  // Franco-Arab / Arabizi
-  'sharmouta', 'sharmota', 'sharmoota', 'charmouta', 'qa7ba', 'qahba', '9a7ba',
-  'kahba', 'ksmk', 'kosomak', 'kosomk', 'kossomak', 'kos', 'kuss', 'zob', 'zobi',
-  'zeb', 'zebbi', 'teez', 'tiz', 'nayek', 'manyook', 'manyak', 'mnyak', 'metnak',
-  '3ars', 'aars', 'khawal', '5awal', 'dayouth', 'gawwad', '9awad', 'khara', '5ara',
-  'zag', 'za2', 'kalb', '7mar', 'hmara', 'khanzeer', '5anzeer',
+export const BANNED_ENGLISH_PROFANITY_L2 = [
+  'hitler', 'stalin', 'nazi', 'nazis', 'swastika', 'holocaust', 'genocide',
+  'terrorist', 'terrorism', 'jihadist', 'isis', 'daesh', 'alqaeda', 'al-qaeda', 'taliban',
+  'suicide', 'suicidal', 'kill', 'murder', 'killurself', 'killmyself', 'kill-yourself', 'dieinfire',
+  'scam', 'scammer', 'cocaine', 'heroin', 'meth', 'methamphetamine', 'crackhead', 'drugdealer', 'weed420',
+  'shootup', 'massacre', 'columbine', 'nuke', 'bombthreat', 'bombing', 'explosive',
+  'penis', 'vagina', 'vulva', 'clit', 'clitoris', 'boob', 'boobs', 'tit', 'tits', 'titties',
+  'anal', 'anus', 'rectum', 'testicle', 'scrotum', 'foreskin', 'dildo', 'orgasm', 'masturbate', 'masturbation',
+  'blowjob', 'handjob', 'fellatio', 'ejaculation', 'erection', 'cum', 'cumshot', 'semen', 'jizz',
 ];
 
-// Category 4: Sacred Religious Names & Figures (Anti-Desecration in Public Handles)
-export const BANNED_RELIGIOUS_TERMS = [
-  'allah', 'prophet', 'muhammad', 'mohammed', 'jesus', 'moses', 'quran', 'islam',
-  'الله', 'الرحمن', 'الرحيم', 'الملك', 'القدوس', 'السلام', 'المؤمن', 'المهيمن',
+export const BANNED_ENGLISH_PROFANITY_L3 = [
+  'asswipe', 'asshat', 'assclown', 'assface', 'bollocks', 'boner', 'booty', 'coon', 'crap',
+  'dipshit', 'douche', 'douchebag', 'dumbass', 'fart', 'fatass', 'fudgepacker', 'fudge-packer',
+  'goddamn', 'goddamnit', 'damn', 'hell', 'homo', 'hooker', 'horny', 'jackass', 'jerkoff', 'milf',
+  'nutsack', 'piss', 'pissed', 'prick', 'queer', 'scumbag', 'slag', 'tosser', 'twat', 'wank', 'wanker',
+  'incest', 'bestiality', 'zoophilia', 'necrophilia', 'pecker', 'smegma', 'choad', 'cooter', 'felch',
+  'gook', 'wetback', 'beaner', 'camel-jockey', 'raghead', 'towelhead', 'tranny', 'shemale',
+  'carpet-muncher', 'skank', 'tramp', 'ho', 'hoe', 'pimp', 'suck', 'sucks', 'suckmy', 'eatshit',
+];
+
+// ============================================================================
+// CATEGORY 3: ARABIC SCRIPT & FRANCO-ARAB (ARABIZI) PROFANITY (L1 / L2 / L3)
+// ============================================================================
+export const BANNED_ARABIC_AND_FRANCO_L1 = [
+  // Core Arabic Script Slurs
+  'شرموط', 'شرموطة', 'شرموطه', 'الشرموطة', 'قحبة', 'قحبه', 'القحبة', 'قحاب', 'عاهرة', 'عاهره', 'العاهرة', 'فاجرة', 'زانية',
+  'كسم', 'كسمك', 'كسمكم', 'كس', 'كسختك', 'كس_امك', 'كس_اختك', 'عرص', 'العرص', 'عرصة', 'معرص',
+  'خول', 'الخول', 'خولات', 'ديوث', 'الديوث', 'قواد', 'منيوك', 'المنيوك', 'منيوكة', 'متناك', 'متناكة', 'نيك',
+  'طيز', 'طيزك', 'زب', 'زبي', 'زبك', 'شاذ', 'لوطي', 'سحاقية',
+  // Core Arabizi Roots
+  'sharmouta', 'sharmota', 'sharmoota', 'charmouta', 'qa7ba', 'qahba', '9a7ba', 'kahba', 'gahba', 'ga7ba',
+  'ksmk', 'ksm', 'kosomak', 'kosomk', 'kossomak', 'kos', 'kuss', 'zob', 'zobi', 'zeb', 'zebbi',
+  'teez', 'tiz', 'nayek', 'neek', 'nik', 'manyook', 'manyak', 'mnyak', 'metnak',
+  '3ars', 'aars', 'ars', 'khawal', '5awal', 'dayouth', 'gawwad', '9awad', 'khara', '5ara',
+];
+
+export const BANNED_ARABIC_AND_FRANCO_L2 = [
+  'ابن_الكلب', 'ابن_الحرام', 'ابن_شرموطة', 'ابن_قحبة',
+  'يلعن', 'ينعل', 'ملعون', 'لعنة', 'الله_يلعنك', 'يلعن_شكلك', 'يلعن_ميتينك', 'تفو', 'يا_كلب', 'يا_حمار',
+  'وسخ', 'سافل', 'واطي', 'حقير', 'منحط', 'نذل', 'قذر', 'زبالة', 'زباله', 'حيوان', 'حمار', 'كلب', 'خنزير',
+  'خرا', 'خرة', 'زق', 'اباحي', 'إباحي', 'سكس', 'بورن', 'عاري', 'عارية', 'انتحار', 'ارهاب', 'إرهاب',
+  'zag', 'za2', 'kalb', '7mar', 'hmar', 'hmara', 'khanzeer', '5anzeer', 'khanzir', '5anzir',
+  'kessrabak', 'kosrabak', 'yen3al', 'yel3an', 'yil3an', 'yal3an', 'keso5tk', 'kosomrabak', 'ksmrabk',
+];
+
+export const BANNED_ARABIC_AND_FRANCO_L3 = [
+  // Exhaustive "kos" family insults
+  'koss', 'koos', 'kous', 'kosom', 'kussumak', 'kosamek', 'kosomko',
+  'kosokht', 'kosokhtak', 'kosekhtak', 'kosikhtak', 'kosbayak', 'kosaboo', 'kosabouk',
+  'kosemak', 'kusemak', 'kos5tk', 'kosokhtk', 'koso5tk', 'kso5tk',
+  'ksoomak', 'ksoomt', 'ksmha', 'ksmo', 'ksmkum', 'kosemkom', 'koskhaltha',
+  // Exhaustive "zeb" / "ayr" variants
+  'zebb', 'zeby', 'zebby', 'zebak', 'zibik', 'zebi', 'zebou', 'zebhom',
+  'zab', 'zabb', 'zabi', 'zaby', 'ayre', 'ayri', 'eire', 'eiry', 'eirak', 'ayrak',
+  'airak', 'airfeek', 'ayrfeek', 'zbe', 'zbk', 'zbbk', 'zbb', 'ayr', '3ayr', '3ayre',
+  // Exhaustive "sharmouta" variants
+  'sharmuta', 'charmuta', 'charmota', 'chrmota', 'shrmota', 'shrmoota', 'sharmot', 'charmot',
+  'sharmate', 'shramet', 'sharaamut', 'sharmoot', 'charmoot', 'charmoota', 'chrmoota', 'sharmotin', 'chramit',
+  // Exhaustive "manyook" / "neek" variants
+  'manyouk', 'mnyook', 'mnyouk', 'manyuk', 'mnyuk', 'manyok', 'mnyok',
+  'manyouka', 'manyuka', 'mnyouka', 'manayek', 'mnayek', 'mnaiek', 'mnykeh',
+  'manyakeh', 'mnyakeh', 'nyak', 'aneek', 'aneekak', 'aneekek', 'aniko',
+  'nikk', 'nek', 'nekk', 'nayk', 'nikak', 'neekak', 'neekik', 'nikhom',
+  // Exhaustive "gahba" / "9a7ba" variants
+  'gahbeh', 'ga7beh', 'qa7beh', '9a7beh', 'gahbat', 'ga7bat', 'qa7bat', '9a7bat', '9hab', 'ghab', 'qhab', 'gohba', '9ohba',
+  // Exhaustive "3ars" variants
+  'arss', '3arss', '3arsa', 'arsa', '3arseh', 'arseh', '3ayras', '3aras', '3rs', '3rss', '3aroos', 'ma3roos', 'ma3ros', 'ta3rees', 't3rees',
+  // Exhaustive animal & scoundrel insults
+  'kelb', 'kalba', 'kelba', 'kleb', 'kileb', 'klab', 'ya-kalb', 'yakkalb',
+  '7maar', 'hmaar', '7mara', '7ameer', 'hameer', 'e7mar', 'ehmar', 'ya-hmar', 'ya-7mar',
+  'hayawan', '7ayawan', '7yawan', 'hayawen', '7ayawen', 'khenzir', 'khanazer', '5anazer',
+  'bheema', 'bheem', 'bhima', 'bhim', 'baghar', 'baghara', 'ba9ara', 'baqara', 'toor', 'tore',
+  // Exhaustive filth & body-part insults
+  '5arah', 'kharah', 'khra', '5ra', '5raa', 'khraa', 'kolkhara', 'kol-khara', 'kol5ara', 'kol-5ara', 'kol5ra', 'kolkhra', 'yakhora', 'ya5ara',
+  'zibil', 'zbel', 'zbeleh', 'zbaleh', 'zbal', 'zabbale', 'shakh5a', 'shakha', 'shakh', '5arafeek', 'kharafeek', '5arat', 'kharat', 'khrat', '5rat',
+  'teezak', 'tizak', 'tizek', 'teezek', 'teezhom', 'tash', 'soorm', 'sormak', 'sormek', 'm2akhartek', 'moukhara',
+  'ba3bous', 'ba3bousak', 'ba3boos', 'ba3bos', 'khorq', '5orq', 'khroq', '5roq',
+  // Exhaustive blasphemous & compound family insults
+  'rabak', 'rabek', 'aln3al', 'yen3alrabak', 'yil3anrabak', 'yel3anrabak', 'yal3anrabak', 'yen3al-rabak', 'yil3an-rabak',
+  'yen3al-deenak', 'yil3an-deenak', 'yel3andeenak', 'yil3andeenak', 'yal3andeenak', 'al-deenk', 'deenk', 'deeneek',
+  'ebnelkalb', 'ebn-el-kalb', 'ebnel7mar', 'ebn-el-7mar', 'ebnelsharmouta', 'ebn-el-sharmouta',
+  'ebnelgahba', 'ebn-el-gahba', 'ebnel9a7ba', 'ebn-el-9a7ba', 'ibnelkalb', 'ibnelsharmouta',
+  'weldel9a7ba', 'weld-el-9a7ba', 'weldelkalba', 'waldel9ahba', 'ibnelharam', 'ebnelharam',
+  'ebn-el-7aram', 'ibnel7aram', 'ibn-el-haram', 'baskoot', 'shaleekh', 'shleekh',
+];
+
+// ============================================================================
+// CATEGORY 4: SACRED RELIGIOUS NAMES & FIGURES (L1 / L2)
+// ============================================================================
+export const BANNED_RELIGIOUS_TERMS_L1 = [
+  'allah', 'god', 'jesus', 'christ', 'muhammad', 'mohammed', 'moses', 'prophet', 'quran', 'koran', 'islam',
+  'الله', 'رب', 'الرب', 'إله', 'اله', 'محمد', 'أحمد', 'رسول_الله', 'نبي', 'قرآن', 'القرآن', 'عيسى', 'موسى',
+];
+
+export const BANNED_RELIGIOUS_TERMS_L2 = [
+  'bible', 'torah', 'messiah', 'yahweh', 'jehovah',
+  'الرحمن', 'الرحيم', 'الملك', 'القدوس', 'السلام', 'المؤمن', 'المهيمن',
   'العزيز', 'الجبار', 'المتكبر', 'الخالق', 'البارئ', 'المصور', 'الغفار', 'القهار',
-  'الوهاب', 'الرزاق', 'الفتاح', 'العليم', 'رب', 'الرب', 'إله', 'اله',
-  'محمد', 'أحمد', 'عيسى', 'موسى', 'إبراهيم', 'ابراهيم', 'نوح', 'آدم', 'قرآن', 'القرآن',
+  'الوهاب', 'الرزاق', 'الفتاح', 'العليم',
+  'الإنجيل', 'إنجيل', 'التوراة', 'توراة', 'المسيح', 'إبراهيم', 'ابراهيم', 'نوح', 'آدم',
   'جبريل', 'ميكائيل', 'إسرافيل',
 ];
 
-// Category 5: Global Brand Names (Anti-Impersonation / Anti-Phishing)
-export const BANNED_BRAND_NAMES = [
-  'google', 'youtube', 'apple', 'microsoft', 'windows', 'amazon', 'aws', 'meta',
-  'facebook', 'instagram', 'whatsapp', 'threads', 'twitter', 'tiktok', 'snapchat',
-  'discord', 'telegram', 'reddit', 'linkedin', 'github', 'gitlab', 'openai',
-  'chatgpt', 'anthropic', 'claude', 'stripe', 'paypal', 'visa', 'mastercard',
-  'binance', 'coinbase', 'cloudflare', 'vercel', 'netflix', 'spotify', 'playstation',
-  'xbox', 'nintendo', 'steam', 'epicgames', 'riotgames',
+// ============================================================================
+// CATEGORY 5: GLOBAL BRAND NAMES (ANTI-IMPERSONATION / ANTI-PHISHING) (L1 / L2)
+// ============================================================================
+export const BANNED_BRAND_NAMES_L1 = [
+  'google', 'youtube', 'apple', 'microsoft', 'amazon', 'aws', 'azure', 'meta', 'facebook', 'instagram',
+  'whatsapp', 'twitter', 'tiktok', 'discord', 'telegram', 'github', 'gitlab', 'openai', 'chatgpt',
+  'anthropic', 'claude', 'stripe', 'paypal', 'cloudflare',
 ];
 
-export const ALL_BANNED_WORDS = new Set([
-  ...RESERVED_SYSTEM_WORDS,
-  ...BANNED_ENGLISH_PROFANITY,
-  ...BANNED_ARABIC_AND_FRANCO_PROFANITY,
-  ...BANNED_RELIGIOUS_TERMS,
-  ...BANNED_BRAND_NAMES,
-]);
+export const BANNED_BRAND_NAMES_L2 = [
+  'bitbucket', 'windows', 'threads', 'snapchat', 'reddit', 'linkedin', 'visa', 'mastercard',
+  'binance', 'coinbase', 'vercel', 'ovh', 'hetzner', 'digitalocean', 'netflix', 'spotify',
+  'valve', 'steam', 'mojang', 'minecraft', 'epicgames', 'riotgames', 'ea', 'ubisoft',
+  'playstation', 'xbox', 'nintendo',
+];
+
+// ============================================================================
+// TIER RESOLVER (LEVEL 1 = ESSENTIAL, LEVEL 2 = STANDARD, LEVEL 3 = MAXIMUM)
+// ============================================================================
+export const TIER_1_ESSENTIAL_WORDS = [
+  ...RESERVED_SYSTEM_WORDS_L1,
+  ...BANNED_ENGLISH_PROFANITY_L1,
+  ...BANNED_ARABIC_AND_FRANCO_L1,
+  ...BANNED_RELIGIOUS_TERMS_L1,
+  ...BANNED_BRAND_NAMES_L1,
+];
+
+export const TIER_2_STANDARD_WORDS = [
+  ...TIER_1_ESSENTIAL_WORDS,
+  ...RESERVED_SYSTEM_WORDS_L2,
+  ...BANNED_ENGLISH_PROFANITY_L2,
+  ...BANNED_ARABIC_AND_FRANCO_L2,
+  ...BANNED_RELIGIOUS_TERMS_L2,
+  ...BANNED_BRAND_NAMES_L2,
+];
+
+export const TIER_3_MAXIMUM_WORDS = [
+  ...TIER_2_STANDARD_WORDS,
+  ...BANNED_ENGLISH_PROFANITY_L3,
+  ...BANNED_ARABIC_AND_FRANCO_L3,
+];
+
+export const ALL_BANNED_WORDS = new Set(TIER_3_MAXIMUM_WORDS);
+
+export function getBannedWordsSet(
+  tier: ForbiddenDictionaryTier = 3,
+  customOrExistingProjectWords: string[] = []
+): Set<string> {
+  const base =
+    tier === 1 ? TIER_1_ESSENTIAL_WORDS : tier === 2 ? TIER_2_STANDARD_WORDS : TIER_3_MAXIMUM_WORDS;
+  return new Set([...base, ...customOrExistingProjectWords.map((w) => w.trim().toLowerCase())]);
+}
 ```
 
-### 4.4 Complete Username & Display Name Validator
+### 4.4 Complete Username & Display Name Validator (Multi-Tier Aware)
 
 ```typescript
 export class UsernameValidatorService {
-  static validate(username: string): { valid: boolean; normalized?: string; error?: string; errorAr?: string } {
+  static validate(
+    username: string,
+    options: { tier?: ForbiddenDictionaryTier; extraBannedWords?: string[] } = {}
+  ): { valid: boolean; normalized?: string; error?: string; errorAr?: string } {
     if (!username || typeof username !== 'string') {
       return { valid: false, error: 'Username is required', errorAr: 'اسم المستخدم مطلوب' };
     }
@@ -371,11 +532,13 @@ export class UsernameValidatorService {
       };
     }
 
+    const activeSet = getBannedWordsSet(options.tier ?? 3, options.extraBannedWords ?? []);
+
     // 1. Direct & Separator-Stripped Match
     const stripped = clean.replace(/[._]/g, '');
     const deLeeted = normalizeLeetSpeak(clean);
 
-    if (ALL_BANNED_WORDS.has(clean) || ALL_BANNED_WORDS.has(stripped) || ALL_BANNED_WORDS.has(deLeeted)) {
+    if (activeSet.has(clean) || activeSet.has(stripped) || activeSet.has(deLeeted)) {
       return {
         valid: false,
         error: 'This username is reserved or not allowed',
@@ -386,8 +549,8 @@ export class UsernameValidatorService {
     // 2. Substring Match against Critical Reserved & Profanity Terms
     const substringCheckPool = [
       ...CRITICAL_BANNED_SUBSTRINGS,
-      ...BANNED_ENGLISH_PROFANITY.filter((w) => w.length >= 4),
-      ...BANNED_ARABIC_AND_FRANCO_PROFANITY.filter((w) => w.length >= 4),
+      ...BANNED_ENGLISH_PROFANITY_L1.filter((w) => w.length >= 4),
+      ...BANNED_ARABIC_AND_FRANCO_L1.filter((w) => w.length >= 4),
     ];
 
     for (const banned of substringCheckPool) {
